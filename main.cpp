@@ -5,8 +5,11 @@
 #include <unordered_set>
 #include "node.h"
 #include "Astar.h"
+#include <chrono>
 
 using namespace std;
+
+auto start_time = chrono::high_resolution_clock::now();
 
 vector<vector<int>> defaultPuzzle = {{1, 2, 3},
                                      {4, 8, 0},
@@ -107,13 +110,19 @@ int main() {
             break;
         case 2:
             cout << "A* with the Misplaced Tile heuristic." << endl;
-            //AStar(puzzle);
+            AStarMisplaced(puzzle); 
             break;
         case 3:
             cout << "A* with the Euclidean distance heuristic." << endl;
             break;
         default:
             cout << "Whats up with you? " << endl;
+            break;
     }
+    cout << "HELLLO WORLD" << endl;
+    auto end_time = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count();
+
+    cout << "Runtime: " << duration << " ms" << endl;
     return 0;
 }
