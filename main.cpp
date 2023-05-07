@@ -110,7 +110,7 @@ int main() {
             break;
         case 2:
             cout << "A* with the Misplaced Tile heuristic." << endl;
-            AStarMisplaced(puzzle); 
+            //AStarMisplaced(puzzle); 
             break;
         case 3:
             cout << "A* with the Euclidean distance heuristic." << endl;
