@@ -87,7 +87,7 @@ vector<vector<int>> nodeCreator(bool initOrGoal) {
     vector<vector<int>> vecPuzzle;
     if (initOrGoal) {
         cout << "This is a node creator for the initial state. Please input the values you'd like. " << endl
-                 << "Please describe the length of the node puzzle." << endl 
+                 << "Please describe the length of the node puzzle." << endl
                  << " 0 is considered empty space" << endl;
     } else {
         cout << "This is a node creator for the goal state. Please input the values you'd like. " << endl
@@ -95,7 +95,7 @@ vector<vector<int>> nodeCreator(bool initOrGoal) {
         << " 0 is considered empty space" << endl;
     }
     int length;
-    char inp;
+    int inp;
     cin >> length;
     for (int i = 0; i < length; i++) {
         vector<int> row;
@@ -109,7 +109,6 @@ vector<vector<int>> nodeCreator(bool initOrGoal) {
         vecPuzzle.push_back(row);
         row.clear();
     }
-    printPuzzle(vecPuzzle);
     return vecPuzzle;
 }
 
