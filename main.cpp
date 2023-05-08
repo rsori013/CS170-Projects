@@ -9,6 +9,7 @@
 
 using namespace std;
 
+
 auto start_time = chrono::high_resolution_clock::now();
 
 vector<vector<int>> defaultPuzzle = {{1, 2, 3},
@@ -80,6 +81,38 @@ vector<vector<int>> getPuzzleFromInput() {
     return puzzle;
 }
 
+
+//True implies initial, false implies goal
+vector<vector<int>> nodeCreator(bool initOrGoal) {
+    vector<vector<int>> vecPuzzle;
+    if (initOrGoal) {
+        cout << "This is a node creator for the initial state. Please input the values you'd like. " << endl
+                 << "Please describe the length of the node puzzle." << endl 
+                 << " 0 is considered empty space" << endl;
+    } else {
+        cout << "This is a node creator for the goal state. Please input the values you'd like. " << endl
+        << "Please describe the length of the node puzzle." << endl
+        << " 0 is considered empty space" << endl;
+    }
+    int length;
+    char inp;
+    cin >> length;
+    for (int i = 0; i < length; i++) {
+        vector<int> row;
+        cout << "Entering row #" << i+1 << endl;
+        for (int j = 0; j < length; j++) {
+            cout << "Enter a value" << endl;
+            cin >> inp;
+            cin.ignore();
+            row.push_back(inp);
+        }
+        vecPuzzle.push_back(row);
+        row.clear();
+    }
+    printPuzzle(vecPuzzle);
+    return vecPuzzle;
+}
+
 int main() {
     int choice;
     cout << "Welcome to XXX (change this to your student ID) 8 puzzle solver. Type \"1\" to use a default puzzle, or \"2\" to enter your own puzzle." << endl;
@@ -89,13 +122,30 @@ int main() {
     if (choice == 1) {
         puzzle = defaultPuzzle;
     } else if (choice == 2) {
-        puzzle = getPuzzleFromInput();
+        //puzzle = getPuzzleFromInput();
+        puzzle = nodeCreator(true);
     } else {
         cout << "Invalid choice." << endl;
         return 1;
     }
 
     printPuzzle(puzzle);
+
+    cout << "This is the puzzle for the goal state. Type \"1\" to use a default puzzle, or \"2\" to enter your own puzzle." << endl;
+    cin >> choice;
+    cin.ignore();
+    vector<vector<int>> goalpuzzle;
+    if (choice == 1) {
+        goalpuzzle = goalPuzzle;
+    } else if (choice == 2) {
+        //puzzle = getPuzzleFromInput();
+        goalpuzzle = nodeCreator(false);
+    } else {
+        cout << "Invalid choice." << endl;
+        return 1;
+    }
+
+    printPuzzle(goalpuzzle);
 
     cout << "Enter your choice of algorithm:" << endl;
     cout << "1- Uniform Cost Search" << endl;
@@ -110,7 +160,8 @@ int main() {
             break;
         case 2:
             cout << "A* with the Misplaced Tile heuristic." << endl;
-            //AStarMisplaced(puzzle); 
+
+            AStarMisplaced(puzzle, goalpuzzle);
             break;
         case 3:
             cout << "A* with the Euclidean distance heuristic." << endl;
