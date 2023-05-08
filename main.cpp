@@ -3,15 +3,20 @@
 #include <string>
 #include <sstream>
 #include <unordered_set>
-#include "Node.h"
 #include "UCS.hpp"
-#include "Problem.h"
+#include <chrono>
 
 using namespace std;
 
-vector<vector<int>> defaultPuzzle = {{8, 7, 1},
-                                     {6, 0, 2},
-                                     {5, 4, 3}};
+auto start_time = chrono::high_resolution_clock::now();
+
+vector<vector<int>> defaultPuzzle = {{1, 2, 3},
+                                     {4, 8, 0},
+                                     {7, 6, 5}};
+
+vector<vector<int>> goalPuzzle =    {{1, 2, 3},
+                                     {4, 5, 6},
+                                     {7, 8, 0}};
 
 void printPuzzle(const vector<vector<int>> &puzzle) {
     for (const auto &row : puzzle) {
@@ -98,21 +103,50 @@ int main() {
     int algorithmChoice;
     cin >> algorithmChoice;
 
+    switch(algorithmChoice) {
+        case 1:
+            {
+                cout << "Uniform Cost Search" << endl;
+                int x, y;
+                for (int i = 0; i < puzzle.size(); ++i) {
+                        for (int j = 0; j < puzzle[i].size(); ++j) {
+                            if (puzzle[i][j] == 0) { 
+                                x = j;
+                                y = i;
+                            }
+                        }
+                }
+                //create start state ucNode(parent, vector<state>, yB, xB, g_n, depth)
+                ucNode* startState = new ucNode(nullptr, puzzle, y, x, 0, 0);
+                //Problem(startNode, goalvector<state>)
+                Problem* p = new Problem(startState, goalPuzzle);
+                ucNode* solution = ucs(p);
 
-    //create starter Node(parent, vector<state>, xB, yB, g_n, depth)
-    Node* startState = new Node(nullptr, puzzle, 1, 1, 0, 0);
-    vector<vector<int>> goal = {{1,2,3},{4,5,6},{7,8,0}};
-    Problem* p = new Problem(startState, goal);
-    Node* solution = ucs(p);
-
-    if(solution != nullptr){
-        cout << "Found goal state!\n";
-        printPuzzle(solution->state);
-        cout << "To solve this problem the search algorithm expanded a total of " << p->expandedNodes << " nodes.\n";
-        cout << "The maximum number of nodes in the queue at any one time: " << p->maxQueueSize << ".\n";
-        cout << "The depth of the goal node was " << solution->depth << ".\n";
+                if(solution != nullptr){
+                    cout << "Found goal state!\n";
+                    printPuzzle(solution->state);
+                    cout << "To solve this problem the search algorithm expanded a total of " << p->expandedNodes << " nodes.\n";
+                    cout << "The maximum number of nodes in the queue at any one time: " << p->maxQueueSize << ".\n";
+                    cout << "The depth of the goal node was " << solution->depth << ".\n";
+                }
+                               
+            }
+            break;
+        case 2:
+            cout << "A* with the Misplaced Tile heuristic." << endl;
+            //AStarMisplaced(puzzle); 
+            break;
+        case 3:
+            cout << "A* with the Euclidean distance heuristic." << endl;
+            break;
+        default:
+            cout << "Whats up with you? " << endl;
+            break;
     }
-    // Implement the selected algorithm to solve the puzzle
-    // ...
+    cout << "HELLLO WORLD" << endl;
+    auto end_time = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count();
+
+    cout << "Runtime: " << duration << " ms" << endl;
     return 0;
 }

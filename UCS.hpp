@@ -1,39 +1,64 @@
+#ifndef UCS_HPP
+#define UCS_HPP
+
 #include <queue>
 #include <vector>
 #include <algorithm>
 #include <utility>
-#include "Node.h"
-#include "Problem.h"
 #include <iostream>
 
 using namespace std;
-
-void print(const vector<vector<int>> &puzzle) {
-    for (const auto &row : puzzle) {
-        for (const auto &val : row) {
-            cout << val << " ";
-        }
-        cout << endl;
+struct ucNode{
+    ucNode* parent = nullptr;
+    vector<vector<int>> state;
+    int xB = 0;
+    int yB = 0;
+    int g_n = 0;
+    int depth = 0;
+    vector<ucNode*> children;
+    ucNode(ucNode* p, vector<vector<int>> s, int y, int x, int g, int d){
+        this->parent = p;
+        this->state = s;
+        this->yB = y;
+        this->xB = x;
+        this->g_n = g;
+        this->depth = d;
     }
-}
+};
 
+struct Problem{
+    ucNode* initialState = nullptr;
+    vector<vector<int>> goalState;
+    int expandedNodes = 0;
+    int maxQueueSize = 0;
+    Problem(ucNode* is, vector<vector<int>> gs){
+        this->initialState = is;
+        this->goalState = gs;
+        this->expandedNodes = 0;
+        this->maxQueueSize = 0;
+    }
+};
 
-Node* ucs(Problem* p){
-    Node* start = p->initialState;
+ucNode* ucs(Problem* p);
+void print(const vector<vector<int>> &state);
+vector<ucNode*> expandNodes(ucNode*, vector<vector<vector<vector<int>>>> &, int , int);
+
+ucNode* ucs(Problem* p){
+    ucNode* start = p->initialState;
     int row = start->yB;
     int col = start->xB;
     int width = p->goalState.size();
     int height = p->goalState[0].size();
 
     //queue to iterate through
-    queue<Node*> queue;
+    queue<ucNode*> queue;
     //a vector (for hash) of vectors(for multiple values) or vector<vector<int>> for puzzles
     vector<vector<vector<vector<int>>>> previousStates(width*height);
 
     //initialize queue with the start state and add to previous states
     queue.push(start);
     previousStates[row*width + col].push_back(start->state);
-    Node* current;
+    ucNode* current;
 
     //while the queue of untested states is not empty keep going
     while(!queue.empty()){
@@ -53,43 +78,65 @@ Node* ucs(Problem* p){
             cout << "The best state to expand with g(n) = " << current->g_n << " and h(n) = 0 is:\n";
             print(current->state);
 
-            //expand the node using the operators
-            int x = current->xB;
-            int y = current->yB;
-            vector<vector<int>> operators = {{0,1},{0,-1},{1,0},{-1,0}};
-            for(int i = 0; i < operators.size(); i++){
-                int newY = y + operators[i][0];
-                int newX = x + operators[i][1];
-
-                //only use the new operator if it is valid
-                if((newY < height) && (newX < width) && (newX >= 0) && (newY >= 0)){
-                    //get new state of vector with swapped values
-                    vector<vector<int>> newState = current->state;
-                    swap(newState[y][x], newState[newY][newX]);   
-
-                    //check if this new state has already been pushed into the queue before
-                    if(!(find(previousStates[newY*width + newX].begin(), 
-                               previousStates[newY*width + newX].end(), newState) != previousStates[newY*width+ newX].end())){
-
-                        //if the new state has not been pushed in create a new node state for it 
-                        Node* node = new Node(current, 
-                                            newState,
-                                            newY,
-                                            newX,
-                                            current->g_n + 1,
-                                            current->depth + 1);
-
-                        //add node to current' children.
-                        current->children.push_back(node);
-
-                        //add node to visited state and queue
-                        previousStates[newY*width + newX].push_back(node->state);
-                        queue.push(node);
-                    }
-                }   
+            //find new states
+            vector<ucNode*> expansion = expandNodes(current, previousStates, width, height);
+            //if any states are found add them to the queue.
+            if(!expansion.empty()){
+                for(int i = 0; i < expansion.size(); i++){
+                    queue.push(expansion[i]);
+                }
             }
         }
         p->expandedNodes++;
     }
     return nullptr;
 }
+
+void print(const vector<vector<int>> &state){
+    for (const auto &row : state) {
+        for (const auto &val : row) {
+            cout << val << " ";
+        }
+        cout << endl;
+    }
+}
+
+vector <ucNode*> expandNodes(ucNode* curr, vector<vector<vector<vector<int>>>>& previousStates, int width, int height){
+    vector <ucNode*> newStates;
+    //expand the node using the operators
+    int x = curr->xB;
+    int y = curr->yB;
+    vector<vector<int>> operators = {{0,1},{0,-1},{1,0},{-1,0}};
+    for(int i = 0; i < operators.size(); i++){
+        int newY = y + operators[i][0];
+        int newX = x + operators[i][1];
+
+        //only use the new operator if it is valid
+        if((newY < height) && (newX < width) && (newX >= 0) && (newY >= 0)){
+            //get new state of vector with swapped values
+            vector<vector<int>> newState = curr->state;
+            swap(newState[y][x], newState[newY][newX]);   
+
+            //check if this new state has already been pushed into the queue before
+            if(!(find(previousStates[newY*width + newX].begin(), 
+                        previousStates[newY*width + newX].end(), newState) != previousStates[newY*width+ newX].end())){
+
+                //if the new state has not been pushed in create a new node state for it 
+                ucNode* node = new ucNode(curr, 
+                                    newState,
+                                    newY,
+                                    newX,
+                                    curr->g_n + 1,
+                                    curr->depth + 1);
+
+                //add node to current' children.
+                curr->children.push_back(node);
+                //add to newStates to send back
+                newStates.push_back(node);
+            }
+        }
+    }
+    return newStates;
+}
+
+#endif
