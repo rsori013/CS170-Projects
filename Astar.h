@@ -1,3 +1,8 @@
+//https://www.tutorialspoint.com/cplusplus-program-to-implement-a-heuristic-to-find-the-vertex-cover-of-a-graph.
+//Utilized ChatGPT for purely debugging purposes.
+//https://www.youtube.com/watch?v=dvWk0vgHijs
+//https://www.geeksforgeeks.org/vector-in-cpp-stl/
+
 #include <queue>
 #include <vector>
 #include <iostream>
