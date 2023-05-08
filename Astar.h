@@ -4,7 +4,7 @@
 #include "node.h"
 
 using namespace std;
-void AStarMisplaced(vector<vector<int>>& initial_state);
+void AStarMisplaced(vector<vector<int>>& initial_state,  vector<vector<int>>& goal);
 int MisplacedTilesCounter(const vector<vector<int>>& current, const vector<vector<int>>& goal);
 vector<Node*> ExpandNode(Node* current_node, const vector<vector<int>>& goal);
 bool IsGoal(const vector<vector<int>>& current, const vector<vector<int>>& goal);
