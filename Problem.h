@@ -1,16 +1,16 @@
 #ifndef PROBLEM_H
 #define PROBLEM_H
 #include <vector>
-#include "Node.h"
+#include "ucNode.h"
 
 using namespace std;
 
 struct Problem{
-    Node* initialState = nullptr;
+    ucNode* initialState = nullptr;
     vector<vector<int>> goalState;
     int expandedNodes = 0;
     int maxQueueSize = 0;
-    Problem(Node* is, vector<vector<int>> gs){
+    Problem(ucNode* is, vector<vector<int>> gs){
         this->initialState = is;
         this->goalState = gs;
         this->expandedNodes = 0;

@@ -2,17 +2,20 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <stack>
 #include <unordered_set>
+#include "ucNode.h"
 #include "UCS.hpp"
+#include "Problem.h"
 #include <chrono>
 
 using namespace std;
 
 auto start_time = chrono::high_resolution_clock::now();
 
-vector<vector<int>> defaultPuzzle = {{1, 2, 3},
-                                     {4, 8, 0},
-                                     {7, 6, 5}};
+vector<vector<int>> defaultPuzzle = {{1, 3, 4},
+                                     {4, 5, 6},
+                                     {8, 7, 0}};
 
 vector<vector<int>> goalPuzzle =    {{1, 2, 3},
                                      {4, 5, 6},
@@ -125,9 +128,28 @@ int main() {
                 if(solution != nullptr){
                     cout << "Found goal state!\n";
                     printPuzzle(solution->state);
+                    stack <ucNode*> full_sol;
+                    ucNode* cur = solution;
+                    while (cur->parent != nullptr){
+                        full_sol.push(cur);
+                        cur = cur->parent;
+                    }
+                    cout << "Here is the sequence of actions: \n";
+                    printPuzzle(puzzle);
+                    cout <<  "\n";
+                    while(!full_sol.empty()){
+                        cur = full_sol.top();
+                        printPuzzle(cur->state);
+                        cout << "\n";
+                        full_sol.pop();                        
+                    }
                     cout << "To solve this problem the search algorithm expanded a total of " << p->expandedNodes << " nodes.\n";
                     cout << "The maximum number of nodes in the queue at any one time: " << p->maxQueueSize << ".\n";
                     cout << "The depth of the goal node was " << solution->depth << ".\n";
+                }
+                else{
+                    cout << "No solution found.\n";
+                    cout << "Number of nodes expanded: " << p->expandedNodes << "\n";
                 }
                                
             }

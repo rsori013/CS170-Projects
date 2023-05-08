@@ -1,18 +1,18 @@
-#ifndef NODE_H
-#define NODE_H
+#ifndef UCNODE_H
+#define UCNODE_H
 #include <vector>
 
 using namespace std;
 
-struct Node{
-    Node* parent = nullptr;
+struct ucNode{
+    ucNode* parent = nullptr;
     vector<vector<int>> state;
     int xB = 0;
     int yB = 0;
     int g_n = 0;
     int depth = 0;
-    vector<Node*> children;
-    Node(Node* p, vector<vector<int>> s, int y, int x, int g, int d){
+    vector<ucNode*> children;
+    ucNode(ucNode* p, vector<vector<int>> s, int y, int x, int g, int d){
         this->parent = p;
         this->state = s;
         this->yB = y;
