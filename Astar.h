@@ -1,65 +1,34 @@
 #include <queue>
-#include <algorithm>
+#include <vector>
 #include <iostream>
+#include <string>
 #include "node.h"
-
 using namespace std;
-void AStarMisplaced(vector<vector<int>>& initial_state,  vector<vector<int>>& goal);
-int MisplacedTilesCounter(const vector<vector<int>>& current, const vector<vector<int>>& goal);
-vector<Node*> ExpandNode(Node* current_node, const vector<vector<int>>& goal);
-bool IsGoal(const vector<vector<int>>& current, const vector<vector<int>>& goal);
-void printSolution(Node* goal_node);
-pair<int, int> FindEmptyTile(const vector<vector<int>>& puzzle);
-vector<vector<int>> SwapTiles(const vector<vector<int>>& puzzle, int row1, int col1, int row2, int col2);
 
-void AStar(vector<vector<int>>& initial_state) {
-    vector<vector<int>> goal = {{1, 2, 3},
-                                {4, 5, 6},
-                                {7, 8, 0}};
 
-    queue<Node*> open;
-    Node* root = new Node{initial_state, 0, MisplacedTilesCounter(initial_state, goal), 0, nullptr};
-    root->f = root->g + root->h;
-    open.push(root);
-
-    int nodesExpanded = 0;
-    int maxNodesInQueue = 1;
-    int goalDepth = 0;
-
-    while (!open.empty()) {
-        Node* current = open.front();
-        open.pop();
-
-        if (IsGoal(current->puzzle, goal)) {
-            goalDepth = current->g;
-            printSolution(current);
-            break;
-        }
-
-        vector<Node*> children = ExpandNode(current, goal);
-        nodesExpanded++;
-
-        for (int i = 0; i < children.size(); i++) {
-            Node* child = children[i];
-            open.push(child);
-        }
-
-        maxNodesInQueue= max(maxNodesInQueue, static_cast<int>(open.size()));
+struct CompareNodes {
+    bool operator()(Node* a, Node* b) const {
+        if (a->f > b->f) {
+            return true;
+    }   else {
+            return false;
     }
+}};
 
-    cout << "To solve this problem the search algorithm expanded a total of " << nodesExpanded << " nodes.\n";
-    cout << "The maximum number of nodes in the queue at any one time: " <<maxNodesInQueue << ".\n";
-    cout << "The depth of the goal node was " << goalDepth << ".\n";
+bool ifVisitedChecker(const vector<vector<int>>& state, const vector<vector<vector<int>>>& visitedStates) {
+    for (int i = 0; i < visitedStates.size(); ++i) {
+        if (visitedStates[i] == state) {
+            return true;
+        }
+    }
+    return false;
 }
 
 
-
-
-
-int MisplacedTilesCounter(const vector<vector<int>>& current, const vector<vector<int>>& goal) {
+int MisplacedTileCount(const vector<vector<int>>& current, const vector<vector<int>>& goal) {
     int misplacedTiles = 0;
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
+    for (int i = 0; i < current.size(); ++i) {
+        for (int j = 0; j < current.size(); ++j) {
             if (current[i][j] != goal[i][j] && current[i][j] != 0) {
                 misplacedTiles++;
             }
@@ -68,55 +37,11 @@ int MisplacedTilesCounter(const vector<vector<int>>& current, const vector<vecto
     return misplacedTiles; // returning how many misplaced tiles there are currently
 }
 
-vector<Node*> ExpandNode(Node* current_node, const vector<vector<int>>& goal) {
-    vector<Node*> children;
-    pair<int, int> empty_tile = FindEmptyTile(current_node->puzzle);
-    int row = empty_tile.first;
-    int col = empty_tile.second;
-    //possible directions a puzzle can move to 
-    vector<pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-
-    for (int i = 0; i < directions.size(); ++i) {
-        int new_row = row + directions[i].first;
-        int new_col = col + directions[i].second;
-
-        if (new_row >= 0 && new_row < 3 && new_col >= 0 && new_col < 3) {
-            vector<vector<int>> new_puzzle = SwapTiles(current_node->puzzle, row, col, new_row, new_col);
-            Node* child = new Node{new_puzzle, current_node->g + 1, MisplacedTilesCounter(new_puzzle, goal), 0, current_node};
-            child->f = child->g + child->h;
-            children.push_back(child);
-        }
-    }
-
-    return children;
-}
-
-bool IsGoal(const vector<vector<int>>& current, const vector<vector<int>>& goal) { // Afunction to check if the current puzzle we have right now is the goal
-    return current == goal;
-}
-
-void printSolution(Node* goal_node) {
-    //it not the root node then there are other nodes to be printed. 
-    if (goal_node->parent != nullptr) {
-        printSolution(goal_node->parent);
-    }
-
-    cout << "The best state to expand with g(n) = " << goal_node->g << " and h(n) = " << goal_node->h << " is:\n";
-    for (int i = 0; i < goal_node->puzzle.size(); ++i) {
-        for (int j = 0; j < goal_node->puzzle[i].size(); ++j) {
-            cout << goal_node->puzzle[i][j] << " ";
-        }
-    cout << "\n";
-}
-cout << "\n";
-
-}
-
-
-pair<int, int> FindEmptyTile(const vector<vector<int>>& puzzle) {
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            if (puzzle[i][j] == 0) { // meaning we find the empty tile lets gooo and returing its location
+// This function will be looking for the 0 in the puzzle.
+pair<int, int> FindEmptyTile(const vector<vector<int>>& state) {
+    for (int i = 0; i < state.size(); ++i) {
+        for (int j = 0; j < state.size(); ++j) {
+            if (state[i][j] == 0) { // meaning we find the empty tile lets gooo and returing its location
                 return {i, j};
             }
         }
@@ -125,9 +50,94 @@ pair<int, int> FindEmptyTile(const vector<vector<int>>& puzzle) {
     return {-4, -20}; 
 }
 
-vector<vector<int>> SwapTiles(const vector<vector<int>>& puzzle, int row1, int col1, int row2, int col2) {
-    vector<vector<int>> new_puzzle = puzzle;
-    swap(new_puzzle[row1][col1], new_puzzle[row2][col2]);
-    return new_puzzle;
+
+// this is the function that will be use to swap
+vector<vector<int>> SwappingNum(const vector<vector<int>>& state, int roww, int coll, int row, int col) {
+    vector<vector<int>> Puzzle = state;
+    swap(Puzzle[roww][coll],Puzzle[row][col]);
+    return Puzzle;
 }
 
+// To print solution following the structure output given.
+void printSolution(Node* goalNode) {
+    //it not the root node then there are other nodes to be printed. 
+    if (goalNode->parent != nullptr) {
+        printSolution(goalNode->parent);
+    }
+
+    cout << "The best state to expand with g(n) = " << goalNode->g << " and h(n) = " << goalNode->h << " is:\n";
+    for (int i = 0; i < goalNode->state.size(); ++i) {
+        for (int j = 0; j < goalNode->state[i].size(); ++j) {
+            cout << goalNode->state[i][j] << " ";
+        }
+    cout << endl;
+}
+cout << endl;
+}
+
+vector<Node*> ExpandNode(Node* currNode, const vector<vector<int>>& goal) {
+    pair<int, int> emptyTile = FindEmptyTile(currNode->state);
+    vector<Node*> children;
+    int row = emptyTile.first;
+    int col = emptyTile.second;
+    //possible operations a puzzle can move to 
+    vector<pair<int, int>> operations = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+    for (int i = 0; i < operations.size(); ++i) {
+        int newRow = row + operations[i].first;
+        int newCol = col + operations[i].second;
+
+        if (newRow >= 0 && newRow < goal.size() && newCol >= 0 && newCol < goal.size()) {
+            vector<vector<int>> newPuzzle = SwappingNum(currNode->state, row, col, newRow, newCol);
+            Node* child = new Node{newPuzzle, currNode->g + 1, MisplacedTileCount(newPuzzle, goal), 0, currNode};
+            child->f = child->g + child->h;
+            children.push_back(child);
+
+            // Add the child to the parent's children vector
+            currNode->children.push_back(child);
+        }
+    }
+
+    return children;
+}
+
+void AStarMisplaced(vector<vector<int>>& initialState, vector<vector<int>>& goal) {
+    priority_queue<Node*, vector<Node*>, CompareNodes> queue;
+    Node* root = new Node{initialState, 0, MisplacedTileCount(initialState, goal), 0, nullptr};
+    root->f = root->g + root->h;
+    queue.push(root);
+
+    int nodes_expanded = 1;
+    int max_nodes_in_queue = 1;
+    int goal_depth = 0;
+
+    vector<vector<vector<int>>> visitedStates;
+
+    while (!queue.empty()) {
+        Node* current = queue.top();
+        queue.pop();
+
+        if (current->state == goal) {
+            goal_depth = current->g;
+            printSolution(current);
+            break;
+        }
+
+        if (!ifVisitedChecker(current->state, visitedStates)) {
+            visitedStates.push_back(current->state);
+            vector<Node*> children = ExpandNode(current, goal);
+            nodes_expanded++;
+
+            for (Node* child : children) {
+                child->f = child->g + child->h;
+                queue.push(child);
+                current->children.push_back(child); // Add child to the parent's children vector
+            }
+
+            max_nodes_in_queue = max(max_nodes_in_queue, static_cast<int>(queue.size()));
+        }
+    }
+
+    cout << "To solve this problem the search algorithm expanded a total of " << nodes_expanded << " nodes.\n";
+    cout << "The maximum number of nodes in the queue at any one time: " << max_nodes_in_queue << ".\n";
+    cout << "The depth of the goal node was " << goal_depth << ".\n";
