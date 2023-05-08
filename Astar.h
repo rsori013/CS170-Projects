@@ -2,7 +2,6 @@
 //Utilized ChatGPT for purely debugging purposes.
 //https://www.youtube.com/watch?v=dvWk0vgHijs
 //https://www.geeksforgeeks.org/vector-in-cpp-stl/
-
 #include <queue>
 #include <vector>
 #include <iostream>
@@ -146,3 +145,4 @@ void AStarMisplaced(vector<vector<int>>& initialState, vector<vector<int>>& goal
     cout << "To solve this problem the search algorithm expanded a total of " << nodes_expanded << " nodes.\n";
     cout << "The maximum number of nodes in the queue at any one time: " << max_nodes_in_queue << ".\n";
     cout << "The depth of the goal node was " << goal_depth << ".\n";
+}
