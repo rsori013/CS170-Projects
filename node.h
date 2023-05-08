@@ -4,10 +4,11 @@
 using namespace std;
 
 struct Node {
-    vector<vector<int>> puzzle;
-    int g;
-    int h;
-    int f;
+    vector<vector<int>> state;
+    double g;
+    double h;
+    double f;
     Node* parent;
+    vector<Node *> children;
 };
 #endif // NODE_H
