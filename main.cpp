@@ -2,20 +2,22 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include <stack>
 #include <unordered_set>
+#include "node.h"
+#include "Astar.h"
+#include <chrono>
+#include <stack>
 #include "ucNode.h"
 #include "UCS.hpp"
 #include "Problem.h"
-#include <chrono>
 
 using namespace std;
 
 auto start_time = chrono::high_resolution_clock::now();
 
-vector<vector<int>> defaultPuzzle = {{0, 1, 2},
-                                     {4, 5, 3},
-                                     {7, 8, 6}};
+vector<vector<int>> defaultPuzzle = {{8, 7, 1},
+                                     {6, 0, 2},
+                                     {5, 4, 3}};
 
 vector<vector<int>> goalPuzzle =    {{1, 2, 3},
                                      {4, 5, 6},
@@ -156,7 +158,8 @@ int main() {
             break;
         case 2:
             cout << "A* with the Misplaced Tile heuristic." << endl;
-            //AStarMisplaced(puzzle); 
+            
+            AStarMisplaced(puzzle, goalpuzzle);
             break;
         case 3:
             cout << "A* with the Euclidean distance heuristic." << endl;
