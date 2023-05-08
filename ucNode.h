@@ -22,5 +22,7 @@ struct ucNode{
     }
 };
 
+struct compare{bool operator()(const ucNode* l, const ucNode* r)const { return l->g_n > r->g_n;}};
+
 
 #endif

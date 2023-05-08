@@ -25,7 +25,7 @@ ucNode* ucs(Problem* p){
     int height = p->goalState[0].size();
 
     //queue to iterate through
-    queue<ucNode*> queue;
+    priority_queue <ucNode*, vector<ucNode*>, compare> queue;
     //a vector (for hash) of vectors(for multiple values) or vector<vector<int>> for puzzles
     vector<vector<vector<vector<int>>>> previousStates(width*height);
 
@@ -40,7 +40,7 @@ ucNode* ucs(Problem* p){
         if(queue.size() > p->maxQueueSize){p->maxQueueSize = queue.size();} 
 
         //pop the top state to check node
-        current = queue.front();
+        current = queue.top();
         queue.pop();
 
         //if the state is the goal state then return the state

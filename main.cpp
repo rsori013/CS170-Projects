@@ -13,9 +13,9 @@ using namespace std;
 
 auto start_time = chrono::high_resolution_clock::now();
 
-vector<vector<int>> defaultPuzzle = {{1, 3, 4},
-                                     {4, 5, 6},
-                                     {8, 7, 0}};
+vector<vector<int>> defaultPuzzle = {{0, 1, 2},
+                                     {4, 5, 3},
+                                     {7, 8, 6}};
 
 vector<vector<int>> goalPuzzle =    {{1, 2, 3},
                                      {4, 5, 6},
