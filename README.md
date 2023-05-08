@@ -1,2 +1,1 @@
-# CS170-Project-1
-![Project 1 Report.pdf](https://github.com/rsori013/CS170-Projects/files/11418412/Project.1.Report.pdf)
+CS170 Project 1
